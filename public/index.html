@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi Lokasi</title>
+
+    <link rel="stylesheet" href="lokasi.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h1>📍 Informasi Lokasi</h1>
+            <p class="subtitle">
+                Mengambil data lokasi dari MapTiler
+            </p>
+
+            <button id="btnLokasi" onclick="ambilLokasi()">
+                Tampilkan Lokasi
+            </button>
+
+            <div id="loading" class="loading">
+                Mengambil data...
+            </div>
+
+            <div id="hasil" class="hasil">
+                <div class="info">
+                    <span class="label">Lokasi</span>
+                    <span id="lokasi">-</span>
+                </div>
+
+                <div class="info">
+                    <span class="label">Koordinat</span>
+                    <span id="koordinat">-</span>
+                </div>
+            </div>
+
+            <div id="error" class="error"></div>
+        </div>
+    </div>
+
+    <script>
+        async function ambilLokasi() {
+            const loading = document.getElementById("loading");
+            const hasil = document.getElementById("hasil");
+            const error = document.getElementById("error");
+            const button = document.getElementById("btnLokasi");
+
+            loading.style.display = "block";
+            hasil.style.display = "none";
+            error.style.display = "none";
+            button.disabled = true;
+
+            try {
+                const response = await fetch("/api/lokasi");
+
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil data");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("lokasi").textContent = data.lokasi;
+
+                document.getElementById("koordinat").textContent =
+                    `${data.koordinat[0]}, ${data.koordinat[1]}`;
+
+                hasil.style.display = "block";
+
+            } catch (err) {
+                error.textContent = "❌ Gagal mengambil data lokasi.";
+                error.style.display = "block";
+
+            } finally {
+                loading.style.display = "none";
+                button.disabled = false;
+            }
+        }
+    </script>
+
+</body>
+</html>

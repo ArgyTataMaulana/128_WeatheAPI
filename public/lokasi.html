@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pencarian Lokasi</title>
+    <link rel="stylesheet" href="lokasi.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Cari Lokasi</h1>
+
+        <input
+            type="text"
+            id="inputLokasi"
+            placeholder="Masukkan lokasi..."
+        >
+
+        <button onclick="cariLokasi()">
+            Cari
+        </button>
+
+        <div id="hasil"></div>
+
+    </div>
+
+    <script>
+        async function cariLokasi() {
+        const lokasiInput = document.getElementById("inputLokasi").value.trim();
+        const hasilDiv = document.getElementById("hasil");
+
+        if (!lokasiInput) {
+            hasilDiv.innerHTML = "<div class='card'>Masukkan lokasi terlebih dahulu.</div>";
+            return;
+        }
+
+        // Tampilkan indikator loading
+        hasilDiv.innerHTML = "<div class='card'>Mencari lokasi...</div>";
+
+        try {
+            const response = await fetch(
+                `/api/lokasi?lokasi=${encodeURIComponent(lokasiInput)}`
+            );
+
+            const data = await response.json();
+
+            // Log ke console untuk mengecek struktur JSON asli dari backend
+            console.log("Data dari backend:", data);
+
+            if (!response.ok) {
+                hasilDiv.innerHTML = `<div class="card">${data.message || 'Terjadi kesalahan.'}</div>`;
+                return;
+            }
+
+            // Menggunakan fallback (|| '-') jika ada data yang kosong/undefined
+            hasilDiv.innerHTML = `
+                <div class="card">
+                    <h2>${data.lokasi || '-'}</h2>
+                    <p><b>Negara:</b> ${data.negara || '-'}</p>
+                    <p><b>Provinsi:</b> ${data.provinsi || '-'}</p>
+                    <p><b>Kecamatan:</b> ${data.kecamatan || data.subdistrict || '-'}</p>
+                    <p><b>Longitude:</b> ${data.longitude || '-'}</p>
+                    <p><b>Latitude:</b> ${data.latitude || '-'}</p>
+                </div>
+            `;
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            hasilDiv.innerHTML = "<div class='card'>Gagal terhubung ke server.</div>";
+        }
+    }
+    </script>
+
+</body>
+</html>
