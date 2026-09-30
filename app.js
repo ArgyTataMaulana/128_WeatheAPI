@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/api/lokasi", async (req, res) => {
     const kota = "jakarta";
     
-    const apiKey = "";
+    const apiKey = "TmW3n2IbOKaZxkghOoYB";
 
     const url = `https://api.maptiler.com/geocoding/${kota}.json?key=${apiKey}`;
 
@@ -31,9 +31,13 @@ app.get("/api/lokasi", async (req, res) => {
     }catch (error) {
 
         console.error(error.message);
-        
+
         res.status(500).json({ 
             message: "Gagal mengambil data dari MapTiler"
         });
     }
-})
+});
+
+app.listen(PORT, () => {
+    console.log(`Server berjalan di http://localhost:${PORT}`);
+});
